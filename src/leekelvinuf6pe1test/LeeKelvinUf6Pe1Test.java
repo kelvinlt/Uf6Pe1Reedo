@@ -98,6 +98,7 @@ public class LeeKelvinUf6Pe1Test {
                         break;
                     case 5:
                         System.out.println("5-Llistar les dades d'un Client i totes les seves Comandes");
+                        System.out.println("Escribe el nombre del cliente");
                         String nombreCliente = br.readLine();
                         if (checkClient(em, nombreCliente) == true) {
                             allComandasFromClient(em, nombreCliente);
@@ -111,7 +112,6 @@ public class LeeKelvinUf6Pe1Test {
                         em.close();
                         break;
                 }
-
             }
 
             Producte testGet = em.find(Producte.class, "agua");
