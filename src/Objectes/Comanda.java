@@ -3,17 +3,17 @@ package Objectes;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
 public class Comanda {
-    @Id
+    @Id @GeneratedValue
     int id;
     Date data;
     List<Producte> productes;
 
-    public Comanda(int id, Date data, List<Producte> productes) {
-        this.id = id;
+    public Comanda(Date data, List<Producte> productes) {
         this.data = data;
         this.productes = productes;
     }
@@ -46,5 +46,5 @@ public class Comanda {
     public String toString() {
         return "Comanda{" + "id=" + id + ", data=" + data + ", productes=" + productes + '}';
     }
-    
+
 }

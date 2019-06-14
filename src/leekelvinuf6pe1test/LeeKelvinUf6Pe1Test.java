@@ -1,9 +1,12 @@
 package leekelvinuf6pe1test;
 
 import Objectes.Client;
+import Objectes.Comanda;
 import Objectes.Producte;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -27,7 +30,6 @@ public class LeeKelvinUf6Pe1Test {
 
                 switch (opcionObj) {
                     case 1:
-
                         System.out.println("1-Afegir un nou Producte");
                         System.out.println("Introdueix un nom:");
                         String nPNom = br.readLine();
@@ -39,13 +41,10 @@ public class LeeKelvinUf6Pe1Test {
                             em.getTransaction().begin();
                             em.persist(newProducte);
                             em.getTransaction().commit();
-                            em.close();
                             System.out.println("Se ha introducido correctamente: " + newProducte.getNom());
                         } else {
-
                             System.out.println("No se ha introducido ya que existe el producto: " + newProducte.getNom());
                         }
-
                         break;
                     case 2:
                         System.out.println("2-Afegir un nou Client");
@@ -56,30 +55,60 @@ public class LeeKelvinUf6Pe1Test {
                         em.getTransaction().begin();
                         //em.persist(nCLient);
                         em.getTransaction().commit();
-                        em.close();
+
                         break;
                     case 3:
                         System.out.println("3-Afegir una nova Comanda");
+                        List<Producte> productes = new ArrayList();
+                        Date newDate = new Date();
+
+                        List<Producte> Productes1 = allProductos(em);
+                        int i = 0;
+                        int opcionComanda = 0;
+                        for (Producte t : Productes1) {
+                            System.out.println(i + ": " + t);
+                            i++;
+                        }
+                        System.out.println(i + ": Salir de opciones");
+
+                        int numeroFinal = i + 1;
+
+                        while (opcionComanda != numeroFinal) {
+                            System.out.println("Escoge el numero de un producto");
+                            opcionComanda = Integer.parseInt(br.readLine());
+
+                            if (opcionComanda == numeroFinal) {
+                                opcionComanda = 0;
+                            } else {
+                                productes.add(Productes1.get(opcionComanda));
+                            }
+
+                        }
+                        Comanda nComanda = new Comanda(newDate, productes);
 
                         break;
                     case 4:
                         System.out.println("4-Llistar tots els Productes");
+                        List<Producte> Productes2 = allProductos(em);
 
-                        TypedQuery<Producte> consulta = em.createQuery("SELECT t FROM Producte t", Producte.class);
-                        List<Producte> Productes = consulta.getResultList();
-
-                        for (Producte t : Productes) {
+                        for (Producte t : Productes2) {
                             System.out.println(t);
                         }
 
                         break;
                     case 5:
                         System.out.println("5-Llistar les dades d'un Client i totes les seves Comandes");
+                        String nombreCliente = br.readLine();
+                        if (checkClient(em, nombreCliente) == true) {
+                            allComandasFromClient(em, nombreCliente);
+                        } else {
+                            System.out.println("No existe el cliente");
+                        }
 
                         break;
                     case 6:
                         System.out.println("6-Sortida del programa");
-
+                        em.close();
                         break;
                 }
 
@@ -121,6 +150,34 @@ public class LeeKelvinUf6Pe1Test {
             return false;
         } else {
             return true;
+        }
+    }
+
+    public static boolean checkClient(EntityManager em, String nombreCliente) {
+        Client cliente = em.find(Client.class, nombreCliente);
+        if (cliente == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public static List<Producte> allProductos(EntityManager em) {
+        TypedQuery<Producte> consulta = em.createQuery("SELECT t FROM Producte t", Producte.class);
+        List<Producte> Productes = consulta.getResultList();
+        return Productes;
+    }
+
+    public static void allComandasFromClient(EntityManager em, String nom) {
+        List<Comanda> Comandas = new ArrayList<>();
+        Client cliente = em.find(Client.class, nom);
+        Comandas = cliente.getComandes();
+        if (Comandas == null) {
+            System.out.println("El cliente no tiene comandas");
+        } else {
+            for (Comanda t : Comandas) {
+                System.out.println(t);
+            }
         }
     }
 
